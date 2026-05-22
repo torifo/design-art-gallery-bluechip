@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NORE — Museum-grade contemporary art</title>
+  <meta name="description" content="NORE is a fictional blue-chip gallery created for design research. New York · London · Paris · Hong Kong." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400;6..96,500;6..96,700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #FFFFFF;
+      --bg-sub: #F7F6F4;
+      --bg-deep: #0A0A0A;
+      --fg: #1A1A1A;
+      --fg-muted: #6F6F6F;
+      --fg-light: #B8B8B8;
+      --border: #E8E8E6;
+      --accent: #5C1A1B;
+      --font-display: 'Bodoni Moda', 'Didot', Georgia, serif;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --space-museum: clamp(6rem, 14vw, 14rem);
+      --space-frame: clamp(2rem, 6vw, 5rem);
+      --space-caption: 1.2rem;
+      --ease: cubic-bezier(0.22, 1, 0.36, 1);
+      --ease-slow: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+    body { background: var(--bg); color: var(--fg); font-family: var(--font-sans); font-weight: 400; font-size: 16px; line-height: 1.55; overflow-x: hidden; }
+    a { color: inherit; text-decoration: none; transition: color .35s var(--ease); }
+    a:hover { color: var(--accent); }
+    :focus-visible { outline: 1.5px solid var(--accent); outline-offset: 3px; }
+    img { display: block; width: 100%; height: 100%; object-fit: cover; }
+    button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+
+    /* ---------- Loader ---------- */
+    .loader {
+      position: fixed; inset: 0; z-index: 100;
+      background: var(--bg);
+      display: grid; place-items: center;
+      pointer-events: none;
+      animation: loader-out 1.6s var(--ease-slow) 1.8s forwards;
+    }
+    .loader-mark {
+      display: flex; flex-direction: column; align-items: center; gap: 1.4rem;
+    }
+    .loader-line {
+      width: 1px; height: 64px; background: var(--fg);
+      transform-origin: top center;
+      transform: scaleY(0);
+      animation: loader-line 1.2s var(--ease-slow) .2s forwards;
+    }
+    .loader-name {
+      font-family: var(--font-display);
+      font-weight: 500;
+      font-size: 1.4rem;
+      letter-spacing: .42em;
+      padding-left: .42em;
+      opacity: 0;
+      animation: loader-name 1.6s var(--ease) .9s forwards;
+    }
+    @keyframes loader-line { to { transform: scaleY(1); } }
+    @keyframes loader-name { to { opacity: 1; } }
+    @keyframes loader-out { to { opacity: 0; visibility: hidden; } }
+
+    /* ---------- Nav ---------- */
+    nav.top {
+      position: fixed; inset: 0 0 auto; z-index: 50;
+      display: flex; justify-content: space-between; align-items: center;
+      min-height: 68px;
+      padding: 1rem clamp(1.25rem, 4vw, 3.2rem);
+      background: rgba(255, 255, 255, 0);
+      transition: background .4s var(--ease), backdrop-filter .4s var(--ease), border-color .4s var(--ease);
+      border-bottom: 1px solid transparent;
+    }
+    nav.top.is-scrolled {
+      background: rgba(255, 255, 255, .78);
+      backdrop-filter: saturate(180%) blur(14px);
+      -webkit-backdrop-filter: saturate(180%) blur(14px);
+      border-bottom-color: var(--border);
+    }
+    .brand {
+      font-family: var(--font-display);
+      font-weight: 500;
+      font-size: 1.35rem;
+      letter-spacing: .38em;
+      padding-left: .38em;
+    }
+    .nav-links {
+      display: flex; gap: clamp(1.2rem, 3vw, 2.6rem);
+      font-size: 11px; letter-spacing: .18em; text-transform: uppercase;
+      color: var(--fg-muted);
+    }
+
+    /* ---------- Hero ---------- */
+    .hero {
+      position: relative;
+      min-height: 100svh;
+      padding: 0 var(--space-frame) var(--space-frame);
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+    }
+    .hero-frame {
+      width: 100%;
+      max-width: 1280px;
+      aspect-ratio: 4 / 5;
+      max-height: 78svh;
+      position: relative;
+      transform-origin: center 30%;
+    }
+    @supports (animation-timeline: view()) {
+      .hero-frame {
+        animation: hero-zoom linear both;
+        animation-timeline: view();
+        animation-range: entry 0% exit 80%;
+      }
+    }
+    @keyframes hero-zoom {
+      0%   { transform: scale(1); }
+      100% { transform: scale(.6); }
+    }
+    .hero-frame img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      filter: contrast(1.02);
+    }
+    .caption-side {
+      position: absolute;
+      left: clamp(.8rem, 2vw, 1.6rem);
+      bottom: var(--space-frame);
+      transform: rotate(-90deg);
+      transform-origin: left bottom;
+      white-space: nowrap;
+      font-size: 11px;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--fg-muted);
+      display: flex; gap: .9rem;
+      pointer-events: none;
+    }
+    .caption-side i { font-style: italic; font-family: var(--font-display); text-transform: none; letter-spacing: .02em; color: var(--fg); }
+    .caption-side em { font-style: normal; color: var(--fg-light); }
+    .hero-foot {
+      position: absolute;
+      right: var(--space-frame); bottom: calc(var(--space-frame) - .4rem);
+      font-size: 10px; letter-spacing: .24em; text-transform: uppercase;
+      color: var(--fg-light);
+      display: flex; gap: .6rem; align-items: center;
+    }
+    .hero-foot .dot { width: 4px; height: 4px; background: var(--accent); border-radius: 50%; }
+
+    /* ---------- Section primitives ---------- */
+    section { padding: var(--space-museum) var(--space-frame); }
+    .section-label {
+      font-size: 11px; letter-spacing: .22em; text-transform: uppercase;
+      color: var(--fg-muted);
+      display: inline-flex; align-items: center; gap: .8rem;
+    }
+    .section-label::before {
+      content: ""; display: inline-block; width: 24px; height: 1px; background: var(--fg-muted);
+    }
+    .display {
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-size: clamp(2.6rem, 6vw, 5.2rem);
+      letter-spacing: -.02em;
+      line-height: 1.02;
+      color: var(--fg);
+    }
+
+    /* ---------- Current Exhibition ---------- */
+    #current { padding-top: clamp(4rem, 8vw, 8rem); }
+    .chapter-num {
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-size: clamp(4rem, 11vw, 13rem);
+      letter-spacing: -.02em;
+      line-height: 1;
+      color: var(--accent);
+      font-feature-settings: "lnum" 1;
+    }
+    .chapter-rule { width: 64px; height: 1px; background: var(--fg); margin: 1.5rem 0 clamp(2.5rem, 6vw, 5rem); }
+    .exhibition-img {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      max-height: 92svh;
+      overflow: hidden;
+      background: var(--bg-sub);
+      margin: 0 calc(var(--space-frame) * -1);
+      width: calc(100% + var(--space-frame) * 2);
+    }
+    .exhibition-img img { filter: contrast(1.02); }
+    .exhibition-meta {
+      display: grid;
+      grid-template-columns: 1.4fr .8fr .8fr;
+      gap: clamp(1.5rem, 4vw, 3rem);
+      margin-top: clamp(2rem, 5vw, 3.5rem);
+      align-items: end;
+    }
+    .exhibition-meta h2 {
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-size: clamp(2rem, 4.4vw, 3.8rem);
+      letter-spacing: -.015em;
+      line-height: 1.05;
+    }
+    .exhibition-meta h2 i { font-style: italic; }
+    .meta-row b { display: block; font-weight: 400; font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: var(--fg-muted); margin-bottom: .55rem; }
+    .meta-row p { font-size: 15px; color: var(--fg); }
+
+    /* ---------- Artists ---------- */
+    #artists { background: var(--bg); border-top: 1px solid var(--border); }
+    .artists-head { display: flex; justify-content: space-between; align-items: end; margin-bottom: clamp(3rem, 6vw, 5rem); }
+    .artists-head p { max-width: 28rem; color: var(--fg-muted); font-size: 14px; }
+    .artist-list { list-style: none; border-top: 1px solid var(--border); position: relative; }
+    .artist-row {
+      position: relative;
+      display: flex; justify-content: space-between; align-items: baseline;
+      padding: clamp(1.4rem, 2.6vw, 2.2rem) 0;
+      border-bottom: 1px solid var(--border);
+      transition: padding-left .5s var(--ease), color .35s var(--ease);
+    }
+    .artist-row .name {
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-size: clamp(1.6rem, 3.4vw, 2.6rem);
+      letter-spacing: -.01em;
+      line-height: 1;
+    }
+    .artist-row .name i { font-style: italic; }
+    .artist-row .meta {
+      font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--fg-muted);
+    }
+    .artist-row:hover { padding-left: 1.2rem; }
+    .artist-row:hover .name { color: var(--accent); }
+    .artist-thumb {
+      position: fixed;
+      top: 0; left: 0;
+      width: 220px; height: 280px;
+      pointer-events: none;
+      opacity: 0; visibility: hidden;
+      transform: translate(-50%, -50%) scale(.96);
+      transition: opacity .25s var(--ease), transform .35s var(--ease);
+      z-index: 40;
+      background: var(--bg-sub);
+      box-shadow: 0 30px 60px -20px rgba(10,10,10,.25);
+      overflow: hidden;
+    }
+    .artist-thumb.is-visible { opacity: 1; visibility: visible; transform: translate(-50%, -50%) scale(1); }
+    .artist-thumb img { filter: contrast(1.02); }
+
+    /* ---------- Press ---------- */
+    #press { border-top: 1px solid var(--border); background: var(--bg-sub); }
+    .press-head { margin-bottom: clamp(2.5rem, 5vw, 4rem); }
+    .press-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); }
+    .press-item {
+      background: var(--bg);
+      padding: clamp(1.5rem, 3vw, 2.4rem);
+      display: flex; justify-content: space-between; align-items: baseline;
+      gap: 1.5rem;
+      transition: background .35s var(--ease);
+    }
+    .press-item:hover { background: var(--bg-sub); }
+    .press-title { font-family: var(--font-display); font-weight: 400; font-size: clamp(1.1rem, 1.8vw, 1.5rem); line-height: 1.15; max-width: 26rem; }
+    .press-title i { font-style: italic; }
+    .press-meta { font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--fg-muted); white-space: nowrap; display: flex; gap: 1rem; align-items: center; }
+    .press-meta .pdf { color: var(--accent); }
+
+    /* ---------- Locations ---------- */
+    #locations { border-top: 1px solid var(--border); }
+    .locations-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: clamp(1.5rem, 3vw, 3rem);
+      margin-top: clamp(3rem, 6vw, 5rem);
+    }
+    .location h3 { font-family: var(--font-display); font-weight: 400; font-size: clamp(1.5rem, 2.2vw, 2rem); letter-spacing: -.01em; margin-bottom: .8rem; }
+    .location address { font-style: normal; color: var(--fg-muted); font-size: 14px; line-height: 1.6; margin-bottom: 1rem; }
+    .location .open { font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--fg); display: inline-flex; align-items: center; gap: .55rem; }
+    .location .open::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: var(--accent); }
+    .location.closed .open { color: var(--fg-muted); }
+    .location.closed .open::before { background: var(--fg-light); }
+
+    /* ---------- Enquire ---------- */
+    #enquire { background: var(--bg-deep); color: #EDEAE5; border-top: 1px solid var(--bg-deep); }
+    #enquire .section-label { color: #8a847c; }
+    #enquire .section-label::before { background: #8a847c; }
+    .enquire-grid { display: grid; grid-template-columns: 1.1fr .9fr; gap: clamp(2rem, 6vw, 6rem); align-items: end; margin-top: clamp(2rem, 4vw, 3rem); }
+    .enquire-grid h2 { font-family: var(--font-display); font-weight: 400; font-size: clamp(2.4rem, 5.4vw, 4.6rem); letter-spacing: -.015em; line-height: 1.05; }
+    .enquire-grid h2 i { font-style: italic; }
+    .enquire-grid p { color: #b8b1a8; max-width: 32rem; font-size: 15px; }
+    .enquire-actions { display: flex; flex-wrap: wrap; gap: 2rem; margin-top: clamp(2.5rem, 5vw, 4rem); padding-top: clamp(2rem, 4vw, 3rem); border-top: 1px solid rgba(232, 232, 230, .12); }
+    .enquire-actions a {
+      font-size: 11px; letter-spacing: .22em; text-transform: uppercase;
+      color: #EDEAE5;
+      padding-bottom: .35rem;
+      border-bottom: 1px solid rgba(237, 234, 229, .35);
+      transition: color .35s var(--ease), border-color .35s var(--ease);
+    }
+    .enquire-actions a:hover { color: #fff; border-bottom-color: var(--accent); }
+    .enquire-actions a.primary { color: #fff; border-bottom-color: var(--accent); }
+
+    /* ---------- Footer ---------- */
+    footer { background: var(--bg); border-top: 1px solid var(--border); padding: clamp(3rem, 6vw, 5rem) var(--space-frame) 2rem; }
+    .footer-top { display: grid; grid-template-columns: 1.2fr .9fr .9fr; gap: clamp(2rem, 5vw, 4rem); margin-bottom: clamp(3rem, 5vw, 4.5rem); }
+    .news h4 { font-family: var(--font-display); font-weight: 400; font-size: clamp(1.4rem, 2.4vw, 2rem); margin-bottom: .8rem; letter-spacing: -.01em; }
+    .news p { color: var(--fg-muted); font-size: 14px; max-width: 24rem; margin-bottom: 1.5rem; }
+    .news-form { display: flex; gap: 0; max-width: 380px; border-bottom: 1px solid var(--fg); }
+    .news-form input { flex: 1; padding: .6rem 0; border: 0; background: transparent; font: inherit; font-size: 14px; color: var(--fg); }
+    .news-form input::placeholder { color: var(--fg-light); }
+    .news-form button { padding: .6rem 0 .6rem 1rem; font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: var(--fg); transition: color .35s var(--ease); }
+    .news-form button:hover { color: var(--accent); }
+    .footer-col h5 { font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: var(--fg-muted); margin-bottom: 1.2rem; font-weight: 500; }
+    .footer-col ul { list-style: none; display: grid; gap: .55rem; font-size: 14px; }
+    .footer-bottom {
+      display: flex; justify-content: space-between; align-items: center; gap: 1rem;
+      padding-top: 1.6rem; border-top: 1px solid var(--border);
+      font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--fg-muted);
+    }
+    .footer-bottom .disclaimer { color: var(--fg-light); max-width: 32rem; text-transform: none; letter-spacing: .04em; font-size: 11px; }
+
+    /* ---------- Custom cursor (pointer devices only) ---------- */
+    @media (hover: hover) and (pointer: fine) {
+      html, body { cursor: none; }
+      a, button, input, .artist-row { cursor: none; }
+      .cursor-dot {
+        position: fixed; top: 0; left: 0; width: 4px; height: 4px;
+        background: var(--fg);
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 200;
+        transform: translate(-50%, -50%);
+        transition: background .25s var(--ease), transform .2s var(--ease);
+        mix-blend-mode: difference;
+        filter: invert(1);
+      }
+      .cursor-dot.is-hot { transform: translate(-50%, -50%) scale(2.4); background: var(--accent); }
+    }
+
+    /* ---------- Reveal ---------- */
+    .reveal { opacity: 0; transform: translateY(36px); transition: opacity 1.2s var(--ease), transform 1.2s var(--ease); }
+    .reveal.in { opacity: 1; transform: translateY(0); }
+
+    /* ---------- Reduced motion ---------- */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+      .hero-frame { transform: scale(.78); animation: none; }
+      .loader { display: none; }
+      .reveal { opacity: 1; transform: none; }
+    }
+
+    /* ---------- Mobile ---------- */
+    @media (max-width: 768px) {
+      nav.top { min-height: 60px; padding: .8rem 1.25rem; background: rgba(255,255,255,.92); border-bottom: 1px solid var(--border); backdrop-filter: blur(10px); }
+      .brand { font-size: 1.1rem; letter-spacing: .32em; }
+      .nav-links { gap: 1rem; font-size: 10px; letter-spacing: .14em; }
+      .nav-links a:nth-child(n+3) { display: none; }
+
+      .hero { padding: 84px 1.25rem 2rem; min-height: auto; }
+      .hero-frame { aspect-ratio: 3 / 4; max-height: none; transform: none !important; animation: none !important; }
+      .caption-side {
+        position: static;
+        transform: none;
+        white-space: normal;
+        flex-wrap: wrap;
+        gap: .4rem .9rem;
+        margin-bottom: 1.2rem;
+        font-size: 10px;
+      }
+      .hero-foot { position: static; margin-top: 1rem; }
+
+      section { padding: clamp(4rem, 12vw, 6rem) 1.25rem; }
+
+      .exhibition-img { margin: 0 -1.25rem; width: calc(100% + 2.5rem); aspect-ratio: 4 / 5; }
+      .exhibition-meta { grid-template-columns: 1fr; gap: 1.4rem; }
+
+      .artists-head { display: block; }
+      .artists-head p { margin-top: 1rem; }
+      .artist-row { padding: 1rem 0; }
+      .artist-row .meta { display: none; }
+      .artist-thumb { display: none; }
+
+      .press-list { grid-template-columns: 1fr; }
+
+      .locations-grid { grid-template-columns: 1fr 1fr; gap: 1.5rem 1.2rem; }
+      .location h3 { font-size: 1.3rem; }
+
+      .enquire-grid { grid-template-columns: 1fr; gap: 1.5rem; }
+      .enquire-actions { gap: 1.2rem; }
+
+      .footer-top { grid-template-columns: 1fr; gap: 2rem; }
+      .footer-bottom { flex-direction: column; align-items: flex-start; gap: .9rem; }
+
+      .cursor-dot { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Loader -->
+  <div class="loader" aria-hidden="true">
+    <div class="loader-mark">
+      <span class="loader-line"></span>
+      <span class="loader-name">NORE</span>
+    </div>
+  </div>
+
+  <!-- Nav -->
+  <nav class="top" aria-label="Primary">
+    <a class="brand" href="#top">NORE</a>
+    <div class="nav-links">
+      <a href="#current">Exhibitions</a>
+      <a href="#artists">Artists</a>
+      <a href="#locations">Locations</a>
+      <a href="#enquire">Enquire</a>
+    </div>
+  </nav>
+
+  <main id="top">
+
+    <!-- Hero -->
+    <section class="hero" aria-label="Featured work">
+      <div class="caption-side" aria-label="Anna Marlowe, Untitled (Veil VII), 2025, oil on linen, 210 by 168 centimetres">
+        <span>Anna Marlowe</span>
+        <em>|</em>
+        <i>Untitled (Veil VII)</i>
+        <em>|</em>
+        <span>2025</span>
+        <em>|</em>
+        <span>Oil on linen</span>
+        <em>|</em>
+        <span>210 × 168 cm</span>
+      </div>
+      <figure class="hero-frame">
+        <img src="https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?auto=format&fit=crop&w=1800&q=80"
+             alt="Anna Marlowe, Untitled (Veil VII), 2025, oil on linen, 210 × 168 cm">
+      </figure>
+      <div class="hero-foot"><span class="dot"></span><span>On view · Gallery III, New York</span></div>
+    </section>
+
+    <!-- Current Exhibition -->
+    <section id="current">
+      <div class="reveal">
+        <span class="section-label">Current Exhibition</span>
+        <div class="chapter-num">01</div>
+        <div class="chapter-rule"></div>
+      </div>
+      <div class="exhibition-img reveal">
+        <img src="https://images.unsplash.com/photo-1577720580479-7d839d829c73?auto=format&fit=crop&w=2200&q=80"
+             alt="Installation view of A Long Quiet by Anna Marlowe, NORE New York, 2026">
+      </div>
+      <div class="exhibition-meta reveal">
+        <h2>A Long Quiet <i>—</i><br>Anna Marlowe</h2>
+        <div class="meta-row">
+          <b>Dates</b>
+          <p>May 12 — July 8, 2026</p>
+        </div>
+        <div class="meta-row">
+          <b>Curated by</b>
+          <p>Elena Vass<br>Gallery III, New York</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Artists -->
+    <section id="artists">
+      <div class="artists-head reveal">
+        <div>
+          <span class="section-label">Artists</span>
+          <h2 class="display" style="margin-top:1.4rem;">Represented</h2>
+        </div>
+        <p>NORE represents twenty-six artists and the estates of seven, working across painting, sculpture, photography and time-based media.</p>
+      </div>
+      <ul class="artist-list">
+        <li><a class="artist-row" data-thumb="https://images.unsplash.com/photo-1578926375605-eaf7559b1458?auto=format&fit=crop&w=600&q=80" href="#enquire">
+          <span class="name">Anna <i>Marlowe</i></span>
+          <span class="meta">b. 1971 — Painting</span>
+        </a></li>
+        <li><a class="artist-row" data-thumb="https://images.unsplash.com/photo-1554907984-15263bfd63bd?auto=format&fit=crop&w=600&q=80" href="#enquire">
+          <span class="name">Hideo <i>Saito</i></span>
+          <span class="meta">b. 1958 — Sculpture</span>
+        </a></li>
+        <li><a class="artist-row" data-thumb="https://images.unsplash.com/photo-1547891654-e66ed7ebb968?auto=format&fit=crop&w=600&q=80" href="#enquire">
+          <span class="name">K. <i>Vass</i></span>
+          <span class="meta">b. 1965 — Painting / Print</span>
+        </a></li>
+        <li><a class="artist-row" data-thumb="https://images.unsplash.com/photo-1582555172866-f73bb12a2ab3?auto=format&fit=crop&w=600&q=80" href="#enquire">
+          <span class="name">Lior <i>Rahm</i></span>
+          <span class="meta">b. 1980 — Photography</span>
+        </a></li>
+        <li><a class="artist-row" data-thumb="https://images.unsplash.com/photo-1499781350541-7783f6c6a0c8?auto=format&fit=crop&w=600&q=80" href="#enquire">
+          <span class="name">Margit <i>Holm</i></span>
+          <span class="meta">1932–2014 — Estate</span>
+        </a></li>
+        <li><a class="artist-row" data-thumb="https://images.unsplash.com/photo-1531913764164-f85c52e6e654?auto=format&fit=crop&w=600&q=80" href="#enquire">
+          <span class="name">Pierre <i>Olivetti</i></span>
+          <span class="meta">b. 1969 — Installation</span>
+        </a></li>
+        <li><a class="artist-row" data-thumb="https://images.unsplash.com/photo-1536924430914-91f9e2041b83?auto=format&fit=crop&w=600&q=80" href="#enquire">
+          <span class="name">Renata <i>Cole</i></span>
+          <span class="meta">b. 1976 — Painting</span>
+        </a></li>
+        <li><a class="artist-row" data-thumb="https://images.unsplash.com/photo-1513519245088-0e12902e5a38?auto=format&fit=crop&w=600&q=80" href="#enquire">
+          <span class="name">Toma <i>Iguchi</i></span>
+          <span class="meta">b. 1984 — Time-based media</span>
+        </a></li>
+        <li><a class="artist-row" data-thumb="https://images.unsplash.com/photo-1552084117-c2222538cfb1?auto=format&fit=crop&w=600&q=80" href="#enquire">
+          <span class="name">Vera <i>Lindgren</i></span>
+          <span class="meta">b. 1973 — Sculpture</span>
+        </a></li>
+      </ul>
+      <div class="artist-thumb" aria-hidden="true"><img alt="" src="" id="artistThumbImg"></div>
+    </section>
+
+    <!-- Press / Catalogue -->
+    <section id="press">
+      <div class="press-head reveal">
+        <span class="section-label">Press & Catalogues</span>
+        <h2 class="display" style="margin-top:1.4rem;">Library</h2>
+      </div>
+      <div class="press-list reveal">
+        <a class="press-item" href="#enquire">
+          <span class="press-title">A Long Quiet — <i>Anna Marlowe</i></span>
+          <span class="press-meta"><span class="pdf">PDF</span><span>2026</span></span>
+        </a>
+        <a class="press-item" href="#enquire">
+          <span class="press-title">Hideo Saito: <i>Slow Bronzes</i> (Monograph)</span>
+          <span class="press-meta"><span class="pdf">PDF</span><span>2025</span></span>
+        </a>
+        <a class="press-item" href="#enquire">
+          <span class="press-title">K. Vass — <i>Field Studies, 1992–2024</i></span>
+          <span class="press-meta"><span class="pdf">PDF</span><span>2024</span></span>
+        </a>
+        <a class="press-item" href="#enquire">
+          <span class="press-title">NORE Annual <i>2025</i> — Press dossier</span>
+          <span class="press-meta"><span class="pdf">PDF</span><span>2025</span></span>
+        </a>
+      </div>
+    </section>
+
+    <!-- Locations -->
+    <section id="locations">
+      <div class="reveal">
+        <span class="section-label">Locations</span>
+        <h2 class="display" style="margin-top:1.4rem;">Four Galleries</h2>
+      </div>
+      <div class="locations-grid reveal">
+        <div class="location">
+          <h3>New York</h3>
+          <address>538 West 24th Street<br>Chelsea, NY 10011</address>
+          <span class="open">Open today · 10–18</span>
+        </div>
+        <div class="location">
+          <h3>London</h3>
+          <address>11 Savile Row<br>Mayfair, W1S 3PG</address>
+          <span class="open">Open today · 10–18</span>
+        </div>
+        <div class="location closed">
+          <h3>Paris</h3>
+          <address>4 rue de Ponthieu<br>75008 Paris</address>
+          <span class="open">Closed today</span>
+        </div>
+        <div class="location">
+          <h3>Hong Kong</h3>
+          <address>15/F H Queen's, 80 Queen's Rd Central</address>
+          <span class="open">Open today · 11–19</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Enquire -->
+    <section id="enquire">
+      <span class="section-label">Enquire</span>
+      <div class="enquire-grid">
+        <h2>Works <i>not</i> publicly available<br>are shown by appointment.</h2>
+        <p>For private viewings, condition reports, provenance documentation, and works held for collectors of the gallery — please contact our client advisory directly.</p>
+      </div>
+      <div class="enquire-actions">
+        <a class="primary" href="mailto:advisory@nore.gallery">advisory@nore.gallery</a>
+        <a href="tel:+12125550199">+1 212 555 0199</a>
+        <a href="#locations">Visit a gallery</a>
+        <a href="#press">Request catalogue</a>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-top">
+      <div class="news">
+        <h4>Quiet correspondence.</h4>
+        <p>Exhibition openings, new acquisitions, and gallery notes. Six dispatches per year, no announcements in between.</p>
+        <form class="news-form" id="newsForm" novalidate>
+          <input type="email" placeholder="your@email" aria-label="Email address" required>
+          <button type="submit">Subscribe →</button>
+        </form>
+      </div>
+      <div class="footer-col">
+        <h5>Gallery</h5>
+        <ul>
+          <li><a href="#current">Exhibitions</a></li>
+          <li><a href="#artists">Artists</a></li>
+          <li><a href="#press">Press & Catalogues</a></li>
+          <li><a href="#locations">Locations</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Advisory</h5>
+        <ul>
+          <li><a href="#enquire">Private viewings</a></li>
+          <li><a href="#enquire">Provenance</a></li>
+          <li><a href="#enquire">Art advisory</a></li>
+          <li><a href="https://www.instagram.com/" rel="noopener noreferrer" target="_blank">Instagram</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 NORE</span>
+      <span class="disclaimer">NORE is a fictional gallery created for design research. It does not exist.</span>
+      <span>Imprint · Privacy</span>
+    </div>
+  </footer>
+
+  <!-- Cursor (pointer devices) -->
+  <div class="cursor-dot" id="cursor" aria-hidden="true"></div>
+
+  <script>
+    // Nav background fade on scroll
+    const navEl = document.querySelector('nav.top');
+    const onScroll = () => {
+      if (window.scrollY > 24) navEl.classList.add('is-scrolled');
+      else navEl.classList.remove('is-scrolled');
+    };
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+
+    // Reveal on intersect
+    const io = new IntersectionObserver(entries => entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+    }), { threshold: 0.12, rootMargin: '0px 0px -40px' });
+    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+    // Hero scroll-driven zoom fallback (when animation-timeline unsupported)
+    const supportsTimeline = CSS && CSS.supports && CSS.supports('animation-timeline: view()');
+    const heroFrame = document.querySelector('.hero-frame');
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!supportsTimeline && heroFrame && !reducedMotion && window.matchMedia('(min-width: 769px)').matches) {
+      const onHeroScroll = () => {
+        const rect = heroFrame.getBoundingClientRect();
+        const vh = window.innerHeight;
+        // progress: 0 when fully in view at top, 1 when hero center has scrolled out
+        const progress = Math.min(1, Math.max(0, -rect.top / vh));
+        const scale = 1 - (progress * 0.4); // 1 → 0.6
+        heroFrame.style.transform = 'scale(' + scale.toFixed(3) + ')';
+      };
+      onHeroScroll();
+      window.addEventListener('scroll', onHeroScroll, { passive: true });
+    }
+
+    // Artist hover thumbnail
+    const thumb = document.querySelector('.artist-thumb');
+    const thumbImg = document.getElementById('artistThumbImg');
+    let thumbRAF;
+    document.querySelectorAll('.artist-row').forEach(row => {
+      row.addEventListener('mouseenter', () => {
+        const src = row.getAttribute('data-thumb');
+        if (src && thumbImg.getAttribute('src') !== src) thumbImg.setAttribute('src', src);
+        thumb.classList.add('is-visible');
+      });
+      row.addEventListener('mouseleave', () => {
+        thumb.classList.remove('is-visible');
+      });
+    });
+    document.addEventListener('mousemove', e => {
+      if (!thumb.classList.contains('is-visible')) return;
+      cancelAnimationFrame(thumbRAF);
+      thumbRAF = requestAnimationFrame(() => {
+        thumb.style.left = e.clientX + 'px';
+        thumb.style.top  = (e.clientY - 20) + 'px';
+      });
+    });
+
+    // Custom 4×4 dot cursor (pointer devices only)
+    const cursor = document.getElementById('cursor');
+    const hoverable = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    if (hoverable && cursor) {
+      let cx = 0, cy = 0, raf;
+      document.addEventListener('mousemove', e => {
+        cx = e.clientX; cy = e.clientY;
+        cancelAnimationFrame(raf);
+        raf = requestAnimationFrame(() => {
+          cursor.style.transform = 'translate(' + cx + 'px,' + cy + 'px) translate(-50%, -50%)';
+        });
+      });
+      document.querySelectorAll('a, button, .artist-row').forEach(el => {
+        el.addEventListener('mouseenter', () => cursor.classList.add('is-hot'));
+        el.addEventListener('mouseleave', () => cursor.classList.remove('is-hot'));
+      });
+    } else if (cursor) {
+      cursor.style.display = 'none';
+    }
+
+    // Newsletter (no real submit)
+    const newsForm = document.getElementById('newsForm');
+    if (newsForm) {
+      newsForm.addEventListener('submit', e => {
+        e.preventDefault();
+        const btn = newsForm.querySelector('button');
+        const input = newsForm.querySelector('input');
+        if (!input.value || !input.checkValidity()) { input.focus(); return; }
+        btn.textContent = 'Received';
+        input.value = '';
+        setTimeout(() => { btn.textContent = 'Subscribe →'; }, 2400);
+      });
+    }
+  </script>
+</body>
+</html>
