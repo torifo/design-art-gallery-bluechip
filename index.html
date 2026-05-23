@@ -10,6 +10,19 @@
   <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400;6..96,500;6..96,700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :where(html,body){
+      line-break:strict;
+      word-break:normal;
+      overflow-wrap:break-word;
+      hanging-punctuation:allow-end;
+    }
+    :where(h1,h2,h3,h4,p,li,dt,dd,figcaption,blockquote,a,span,small,strong,em,button){
+      line-break:strict;
+      word-break:auto-phrase;
+      overflow-wrap:break-word;
+    }
+    :where(h1,h2,h3,h4,[class*=title],[class*=brand],[class*=label],[class*=tag],[class*=kanban],[class*=seal]){text-wrap:balance}
+    :where(p,li,dd,figcaption,blockquote){text-wrap:pretty}
     :root {
       --bg: #FFFFFF;
       --bg-sub: #F7F6F4;
